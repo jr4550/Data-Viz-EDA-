@@ -152,3 +152,30 @@ ggplot(data = molokai_df, aes(x = date, y = tmax, color = name))+
     ## (`geom_point()`).
 
 ![](Data-Viz2_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+## Patchwork
+
+Make 3 polots and combine using patchwork
+
+``` r
+ggp_tmax_tmin = 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y= tmax, color = name))+
+  geom_point(alpha = 0.5)
+
+ggp_prec_density =
+  weather_df %>% 
+  filter(prcp > 0 ) %>% 
+  ggplot(aes(x=prcp, fill = name))+
+  geom_density(alpha = 0.5)
+
+ggp_temp_season = 
+   weather_df %>% 
+  ggplot(aes(x = tmin, y= tmax, color = name))+
+  geom_point(alpha = 0.5)
+geom_smooth(se = FALSE)
+```
+
+    ## geom_smooth: na.rm = FALSE, orientation = NA, se = FALSE
+    ## stat_smooth: na.rm = FALSE, orientation = NA, se = FALSE
+    ## position_identity
