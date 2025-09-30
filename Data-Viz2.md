@@ -23,33 +23,132 @@ data("weather_df")
 library(patchwork)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax
-for authoring HTML, PDF, and MS Word documents. For more details on
-using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that
-includes both content as well as the output of any embedded R code
-chunks within the document. You can embed an R code chunk like this:
+## Scatterplot
 
 ``` r
-summary(cars)
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = 0.5) +
+  labs(
+    x = "Minimum Daily Temp",
+    y = "maximum daily temp", 
+    title = "temperature scatter plot",
+    caption = "data from NOAA",
+    color = "location"
+  )
 ```
 
-    ##      speed           dist       
-    ##  Min.   : 4.0   Min.   :  2.00  
-    ##  1st Qu.:12.0   1st Qu.: 26.00  
-    ##  Median :15.0   Median : 36.00  
-    ##  Mean   :15.4   Mean   : 42.98  
-    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
-    ##  Max.   :25.0   Max.   :120.00
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
 
-## Including Plots
+![](Data-Viz2_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
-You can also embed plots, for example:
+## Scales
 
-![](Data-Viz2_files/figure-gfm/pressure-1.png)<!-- -->
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = 0.5) +
+  labs(
+    x = "Minimum Daily Temp",
+    y = "maximum daily temp", 
+    title = "temperature scatter plot",
+    caption = "data from NOAA",
+    color = "location"
+  ) +
+  scale_x_continuous(
+    breaks = c(-20, 0, 25), 
+    labels = c("-20C", "0", "25"),
+  ) +
+  scale_y_continuous(
+    trans = "sqrt",
+    limits = c(10, 30)
+  )
+```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to
-prevent printing of the R code that generated the plot.
+    ## Warning in transformation$transform(x): NaNs produced
+
+    ## Warning in scale_y_continuous(trans = "sqrt", limits = c(10, 30)): sqrt
+    ## transformation introduced infinite values.
+
+    ## Warning: Removed 843 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](Data-Viz2_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+``` r
+ggp_temperature =
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = 0.5) +
+  labs(
+    x = "Minimum Daily Temp",
+    y = "maximum daily temp", 
+    title = "temperature scatter plot",
+    caption = "data from NOAA",
+    color = "location"
+  ) +
+  scale_x_continuous(
+    breaks = c(-20, 0, 25), 
+    labels = c("-20C", "0", "25"),
+  ) +
+  viridis::scale_color_viridis(
+    discrete = TRUE
+  )
+```
+
+## Themes
+
+make my base plot
+
+``` r
+ggp_temperature +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](Data-Viz2_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+``` r
+ggp_temperature +
+  theme_bw () +
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](Data-Viz2_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+ggsave("weather_scatterplot.png", ggp_temperature)
+```
+
+    ## Saving 7 x 5 in image
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+## Adding data to geoms
+
+``` r
+central_park_df = 
+  weather_df %>% 
+  filter(name == "CentralPark_NY")
+
+molokai_df = 
+  weather_df %>% 
+  filter(name == "Molokai_HI")
+
+ggplot(data = molokai_df, aes(x = date, y = tmax, color = name))+
+  geom_point() +
+  geom_line(data = central_park_df)
+```
+
+    ## Warning: Removed 1 row containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](Data-Viz2_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
